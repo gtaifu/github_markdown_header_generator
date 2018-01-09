@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import string
+import sys
 
 def get_content_level(strip_line):
     head, sep, tail = strip_line.partition(' ')
@@ -18,7 +19,8 @@ def retrieve_headers(input_fn):
                 continue
 
             section_title, level = get_content_level(strip_line)
-            # print("print while reading the file. Section title: {}, level: {}".format(section_title, level))
+            # print("print while reading the file. Section title: {}, "
+            #   "level: {}".format(section_title, level))
             new_header = header(section_title, level)
 
             headers.absorb(new_header)
@@ -29,9 +31,14 @@ class header():
     def __init__(self, content='', level=-1, is_virtual=False):
         # vritual header is used for the section title which
         #  directly starts from higher levels.
-        self.is_virtual = is_virtual
         self.header_title = content
         self.my_level = level  # level starts from 0.
+
+        if level == -1:
+            self.is_virtual = True
+        else:
+            self.is_virtual = is_virtual
+
         self.my_sec_num = 0
         self.child_headers = []
 
@@ -75,7 +82,7 @@ class header():
         # Lower case the string
         header = header.lower()
         # remove any punction other than hypen
-        header.strip(string.punctuation.translate({ord('-'): None}))
+        header = header.strip(string.punctuation.translate({ord('-'): None}))
         # change any space into a hypen
         header = ' '.join(header.split()).replace(' ', '-')
 
@@ -110,32 +117,42 @@ class header():
         for child_header in self.child_headers:
             child_header.gen_gfm_anchor(existing_anchor_links)
 
-    def print_gfm_toc(self, print_level=False):
-        # if self.my_level == -1:
-        #     new_sec_num_info = ''
-        # elif self.my_level == 0:
-        #     new_sec_num_info = str(self.my_sec_num)
-        # else:
-        #     new_sec_num_info = sec_num_info + '.' + str(self.my_sec_num)
-
+    def gen_gfm_toc(self, add_sec_num=False):
+        toc = []
         if not self.is_virtual and self.my_level != -1:
-            print("{} {} {}".format(self.get_level_symbol(
-                ' '), self.my_sec_num, self.anchor))
+            if add_sec_num:
+                toc.append("{} - {} {}".format(self.get_level_symbol(' '),
+                                      self.my_sec_num, self.anchor))
+            else:
+                toc.append("{} - {}".format(self.get_level_symbol(' '),
+                                            self.anchor))
 
         for child_header in self.child_headers:
-            child_header.print_gfm_toc(print_level)
+            toc.extend(child_header.gen_gfm_toc(add_sec_num))
 
-    def print_headers(self, print_level=False):
-        # if self.my_level == -1:
-        #     new_sec_num_info = ''
-        # elif self.my_level == 0:
-        #     new_sec_num_info = str(self.my_sec_num)
-        # else:
-        #     new_sec_num_info = sec_num_info + '.' + str(self.my_sec_num)
+        return toc
 
+    def print_headers(self, add_sec_num=False):
         if not self.is_virtual and self.my_level != -1:
-            print("{} {} {}".format(self.get_level_symbol(
-                ' '), self.my_sec_num, self.header_title))
+            if add_sec_num:
+                print("{} {} {}".format(self.get_level_symbol(
+                    ' '), self.my_sec_num, self.header_title))
+            else:
+                print("{} {}".format(self.get_level_symbol(
+                    ' '), self.header_title))
 
         for child_header in self.child_headers:
-            child_header.print_headers(print_level)
+            child_header.print_headers(add_sec_num)
+
+input_fn = sys.argv[1]
+print("The file name read from the argument is:", input_fn)
+try:
+    headers = retrieve_headers(input_fn)
+    headers.assign_child_sec_num()
+    headers.gen_gfm_anchor()
+    toc = headers.gen_gfm_toc(False)
+except:
+    raise Error("Something wrong heppend.")
+print("Processing finished successfully with Generated title: \n")
+for item in toc:
+    print(item)

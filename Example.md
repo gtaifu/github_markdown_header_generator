@@ -1,11 +1,12 @@
-- [h3 level](#h3-level)
-- [h1 header](#h1-header)
-- [Good h2 Header](#good-h2-header)
-- [The Second h2 Header 中文](#the-second-h2-header-中文)
-- [h1 Header](#h1-header-1)
-- [Direct h3 Header](#direct-h3-header)
-- [H4 header](#h4-header)
-- [Third h2 header](#third-h2-header)
+   - 1.1.1 [h3 level](#h3-level)
+ - 2 [h1 header](#h1-header)
+  - 2.1 [Good h2 Header](#good-h2-header)
+  - 2.2 [The Second h2 Header 中文](#the-second-h2-header-中文)
+ - 3 [h1 Header](#h1-header-1)
+   - 3.1.1 [Direct h3 Header###](#direct-h3-header)
+    - 3.1.1.1 [H4 header](#h4-header)
+  - 3.2 [Third h2 header](#third-h2-header)
+  - 3.3 [Third h2 header](#third-h2-header-1)
 
 This page links to the inventories of all kinds of generators.
 
@@ -26,11 +27,11 @@ This is good here.
 ## Good h2 Header
 Happy new Year.
 
-## The Second h2 Header 中文
+## The Second h2 Header
 Hello world.
 
 # h1 Header
-### Direct h3 Header
+### Direct h3 Header###
 
 #### H4 header
 
